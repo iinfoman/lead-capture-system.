@@ -29,6 +29,8 @@ export default function LandingHero({ onGetQuote }) {
               <img
                 src={business.logo_url}
                 alt=""
+                width="44"
+                height="44"
                 className="h-11 w-11 rounded-xl bg-white/10 object-contain p-1"
               />
             ) : (
@@ -92,8 +94,9 @@ export default function LandingHero({ onGetQuote }) {
             ) : null}
           </div>
 
-          <p className="mt-5 text-sm text-white/70">
-            Takes about a minute · No obligation · We reply fast
+          <p className="mt-5 max-w-md text-sm leading-relaxed text-white/75">
+            Tell us what is wrong and we will come back with a price. Free, and you are
+            under no obligation to book.
           </p>
         </div>
       </div>

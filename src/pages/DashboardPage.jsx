@@ -161,7 +161,7 @@ export default function DashboardPage() {
           { label: 'Follow-ups due', value: stats.dueToday, accent: stats.dueToday > 0 },
         ].map((stat) => (
           <div key={stat.label} className="card px-4 py-3.5">
-            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
               {stat.label}
             </dt>
             <dd
@@ -247,7 +247,7 @@ export default function DashboardPage() {
         />
       ) : null}
 
-      <p className="pt-2 text-xs text-slate-400">
+      <p className="pt-2 text-xs text-slate-500">
         Pipeline runs {LEAD_STATUSES.map((s) => s.label).join(' → ')}.
       </p>
     </div>

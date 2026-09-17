@@ -63,7 +63,7 @@ export default function ReviewsCarousel() {
                 aria-label={`Show review ${i + 1} of ${testimonials.length}`}
                 aria-current={i === index}
                 className={`h-2 rounded-full transition-all ${
-                  i === index ? 'w-7' : 'w-2 bg-slate-300 hover:bg-slate-400'
+                  i === index ? 'w-7' : 'w-2 bg-slate-400 hover:bg-slate-600'
                 }`}
                 style={i === index ? { background: 'var(--brand-primary)' } : undefined}
               />

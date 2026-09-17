@@ -20,7 +20,7 @@ export default function SearchFilterBar({ filters, onChange, services, resultCou
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
         <div className="relative flex-1">
           <span
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"
             aria-hidden="true"
           >
             🔍

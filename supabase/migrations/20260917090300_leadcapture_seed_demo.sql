@@ -6,8 +6,9 @@
 -- docs/TENANT_ISOLATION_TEST.md for the check.
 --
 -- Safe to re-run: every insert is keyed on a fixed UUID with `do nothing`.
--- Photo URLs point at Unsplash and are placeholders for the demo only —
--- real tenants upload into the `leadcapture-photos` bucket.
+-- Work photos are inline SVG placeholders, so the demo never depends on a
+-- third-party CDN and can never show a broken image. Real tenants replace
+-- them with their own photographs via Settings -> Work photos.
 -- ---------------------------------------------------------------------------
 
 -- Tenant A ------------------------------------------------------------------
@@ -22,7 +23,7 @@ insert into leadcapture.businesses (
   'Family-run plumbers working the Southern Suburbs since 2009. Fully insured, '
   || 'upfront pricing, and we clean up before we leave. No call-out fee for '
   || 'quotes booked online.',
-  '#0f766e', '#111827',
+  '#2F5D7C', '#23262B',
   '+27 21 555 0142', '27825550142', 'jobs@tmplumbing.co.za',
   'Southern Suburbs, City Bowl & Atlantic Seaboard',
   '{"mon_fri": "07:00 - 17:00", "sat": "08:00 - 13:00", "sun": "Emergencies only", "emergency": "24/7 for burst pipes"}'::jsonb,
@@ -69,11 +70,11 @@ on conflict (id) do nothing;
 
 insert into leadcapture.work_photos (id, business_id, image_url, caption, sort_order) values
   ('d1000000-0000-4000-8000-000000000001', '11111111-1111-4111-8111-111111111111',
-   'https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?w=800&q=70', 'Full bathroom re-pipe in Newlands', 1),
+   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI0UzRUFGMCIvPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJGNUQ3QyIgc3Ryb2tlLXdpZHRoPSIxNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIwIDM4MGgxODB2LTE0MGgxODB2MjAwaDIwMCIvPjxjaXJjbGUgY3g9IjMwMCIgY3k9IjM4MCIgcj0iMjYiLz48Y2lyY2xlIGN4PSI0ODAiIGN5PSIyNDAiIHI9IjI2Ii8+PC9nPjxyZWN0IHg9IjAiIHk9IjU3NiIgd2lkdGg9IjgwMCIgaGVpZ2h0PSIyNCIgZmlsbD0iI0E4NTAwQiIvPjwvc3ZnPg==', 'Full bathroom re-pipe in Newlands', 1),
   ('d1000000-0000-4000-8000-000000000002', '11111111-1111-4111-8111-111111111111',
-   'https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=800&q=70', 'Geyser swap-out, Kenilworth', 2),
+   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI0UzRUFGMCIvPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJGNUQ3QyIgc3Ryb2tlLXdpZHRoPSIxNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyOTAiIHk9IjE1MCIgd2lkdGg9IjIyMCIgaGVpZ2h0PSIzMDAiIHJ4PSIxMTAiLz48cGF0aCBkPSJNNDAwIDE1MHYtNDBNMzMwIDQ3MHY2ME00NzAgNDcwdjYwIi8+PC9nPjxyZWN0IHg9IjAiIHk9IjU3NiIgd2lkdGg9IjgwMCIgaGVpZ2h0PSIyNCIgZmlsbD0iI0E4NTAwQiIvPjwvc3ZnPg==', 'Geyser swap-out, Kenilworth', 2),
   ('d1000000-0000-4000-8000-000000000003', '11111111-1111-4111-8111-111111111111',
-   'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=70', 'Outside tap and irrigation line', 3)
+   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI0UzRUFGMCIvPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzJGNUQ3QyIgc3Ryb2tlLXdpZHRoPSIxNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMjUwIDQyMGgzMDBNMzAwIDQyMHYtOTBhMTAwIDEwMCAwIDAgMSAyMDAgMHY0MCIvPjxwYXRoIGQ9Ik01MDAgMzcwaDgwIi8+PC9nPjxyZWN0IHg9IjAiIHk9IjU3NiIgd2lkdGg9IjgwMCIgaGVpZ2h0PSIyNCIgZmlsbD0iI0E4NTAwQiIvPjwvc3ZnPg==', 'Outside tap and irrigation line', 3)
 on conflict (id) do nothing;
 
 -- Tenant B — exists to prove isolation ---------------------------------------
@@ -87,7 +88,7 @@ insert into leadcapture.businesses (
   'Certified electricians. Load-shedding ready.',
   'Master Electricians registered with the ECA. Inverter and solar-ready '
   || 'installs, COC certificates, and fault-finding that actually finds the fault.',
-  '#1d4ed8', '#0b1220',
+  '#A8500B', '#1A1D21',
   '+27 21 555 0198', '27835550198', 'hello@atlanticsparks.co.za',
   'Atlantic Seaboard, CBD & Northern Suburbs',
   '{"mon_fri": "07:30 - 16:30", "sat": "By appointment", "sun": "Closed", "emergency": "24/7 electrical faults"}'::jsonb,
@@ -126,9 +127,9 @@ on conflict (id) do nothing;
 
 insert into leadcapture.work_photos (id, business_id, image_url, caption, sort_order) values
   ('d2000000-0000-4000-8000-000000000001', '22222222-2222-4222-8222-222222222222',
-   'https://images.unsplash.com/photo-1621905251918-48416bd8575a?w=800&q=70', '8kW inverter install, Sea Point', 1),
+   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI0YzRTlERiIvPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0E4NTAwQiIgc3Ryb2tlLXdpZHRoPSIxNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cmVjdCB4PSIyMzAiIHk9IjE2MCIgd2lkdGg9IjM0MCIgaGVpZ2h0PSIyODAiIHJ4PSIxNiIvPjxwYXRoIGQ9Ik0yOTAgMjMwaDgwTTQzMCAyMzBoODBNMjkwIDMwMGg4ME00MzAgMzAwaDgwTTI5MCAzNzBoODBNNDMwIDM3MGg4MCIvPjwvZz48cmVjdCB4PSIwIiB5PSI1NzYiIHdpZHRoPSI4MDAiIGhlaWdodD0iMjQiIGZpbGw9IiMyRjVEN0MiLz48L3N2Zz4=', '8kW inverter install, Sea Point', 1),
   ('d2000000-0000-4000-8000-000000000002', '22222222-2222-4222-8222-222222222222',
-   'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=70', 'DB board rebuild, Century City', 2)
+   'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNjAwIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgZmlsbD0iI0YzRTlERiIvPjxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0E4NTAwQiIgc3Ryb2tlLXdpZHRoPSIxNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNNDMwIDEzMCAzMDAgMzMwaDExMGwtNDAgMTYwIDE3MC0yMTBINDMweiIvPjwvZz48cmVjdCB4PSIwIiB5PSI1NzYiIHdpZHRoPSI4MDAiIGhlaWdodD0iMjQiIGZpbGw9IiMyRjVEN0MiLz48L3N2Zz4=', 'DB board rebuild, Century City', 2)
 on conflict (id) do nothing;
 
 -- Sample leads so the dashboard is not an empty shell on first login ---------

@@ -173,7 +173,7 @@ export default function LeadDetailPanel({ lead, business, onClose, onSave, onDel
           </div>
 
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-slate-400">Contact</h3>
+            <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500">Contact</h3>
             <dl className="mt-2.5 divide-y divide-slate-100 rounded-xl border border-slate-200">
               {contactRows.map((row) => (
                 <div key={row.label} className="flex items-center justify-between gap-3 px-3.5 py-2.5">
@@ -199,7 +199,7 @@ export default function LeadDetailPanel({ lead, business, onClose, onSave, onDel
           </section>
 
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-slate-400">
+            <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500">
               What they asked for
             </h3>
             <p className="mt-2.5 whitespace-pre-wrap rounded-xl bg-slate-50 px-4 py-3.5 text-sm leading-relaxed text-slate-700">
@@ -223,7 +223,7 @@ export default function LeadDetailPanel({ lead, business, onClose, onSave, onDel
           </section>
 
           <section>
-            <label htmlFor="status" className="text-xs font-bold uppercase tracking-wide text-slate-400">
+            <label htmlFor="status" className="text-xs font-bold uppercase tracking-wide text-slate-500">
               Status
             </label>
             <div className="mt-2.5 flex items-center gap-2">
@@ -240,7 +240,7 @@ export default function LeadDetailPanel({ lead, business, onClose, onSave, onDel
                   </option>
                 ))}
               </select>
-              {statusSaving ? <Spinner className="h-4 w-4 text-slate-400" /> : null}
+              {statusSaving ? <Spinner className="h-4 w-4 text-slate-500" /> : null}
             </div>
           </section>
 
@@ -250,7 +250,7 @@ export default function LeadDetailPanel({ lead, business, onClose, onSave, onDel
                 Quote amount
               </label>
               <div className="relative">
-                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-400">
+                <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500">
                   R
                 </span>
                 <input

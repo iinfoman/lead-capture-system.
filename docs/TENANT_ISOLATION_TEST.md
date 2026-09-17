@@ -12,7 +12,7 @@ another's leads.
 This spins up a throwaway local Postgres, stubs the `auth.*` and `storage.*`
 objects Supabase provides, applies the real migrations from
 `supabase/migrations/`, re-applies them to prove they are idempotent, and runs
-30 assertions as four roles. It never connects to the shared Ovibe project.
+35 assertions as four roles. It never connects to the shared Ovibe project.
 
 What it asserts:
 
@@ -42,6 +42,12 @@ What it asserts:
 - sees every lead and every business across all tenants
 - can update any tenant's lead
 - gets this through stacked RLS policies, not a service-role key
+
+**The hardening script** (runs last, since it is destructive)
+- before it, an anonymous visitor can submit a lead
+- after it, they cannot write to `leads` at all
+- after it, the landing page still reads business config and services, and
+  owner A still sees their own five leads
 
 ## By hand, in a real browser
 

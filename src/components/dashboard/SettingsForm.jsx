@@ -10,7 +10,19 @@ const HOUR_KEYS = [
   { key: 'emergency', label: 'Emergency cover', placeholder: '24/7 for burst pipes' },
 ]
 
-const PRESET_COLORS = ['#0f766e', '#1d4ed8', '#b91c1c', '#c2410c', '#7c3aed', '#0891b2', '#15803d']
+// Starting points drawn from trade directions rather than a generic colour
+// wheel, so a business lands somewhere that suits its work. Every one of these
+// carries white button text at WCAG AA (verified: lowest is 5.5:1), which a
+// free-for-all colour picker cannot promise.
+const PRESET_COLORS = [
+  { hex: '#2F5D7C', name: 'Steel — plumbing, trades' },
+  { hex: '#A8500B', name: 'Hi-vis amber — construction, electrical' },
+  { hex: '#1F4D3D', name: 'Deep pine — cleaning, garden' },
+  { hex: '#16243F', name: 'Navy — professional services' },
+  { hex: '#9C3A24', name: 'Clay — food, hospitality' },
+  { hex: '#3B2233', name: 'Aubergine — salon, beauty' },
+  { hex: '#23262B', name: 'Charcoal — neutral' },
+]
 
 export default function SettingsForm({ business, onSaved }) {
   const [form, setForm] = useState(business)
@@ -162,10 +174,12 @@ export default function SettingsForm({ business, onSaved }) {
                 <img
                   src={form.logo_url}
                   alt="Your logo"
+                  width="56"
+                  height="56"
                   className="h-14 w-14 rounded-xl border border-slate-200 object-contain p-1"
                 />
               ) : (
-                <span className="grid h-14 w-14 place-items-center rounded-xl border border-dashed border-slate-300 text-xs text-slate-400">
+                <span className="grid h-14 w-14 place-items-center rounded-xl border border-dashed border-slate-300 text-xs text-slate-500">
                   None
                 </span>
               )}
@@ -176,7 +190,7 @@ export default function SettingsForm({ business, onSaved }) {
                 className="text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-semibold"
                 aria-label="Upload logo"
               />
-              {uploading ? <Spinner className="h-4 w-4 text-slate-400" /> : null}
+              {uploading ? <Spinner className="h-4 w-4 text-slate-500" /> : null}
             </div>
           </div>
         </div>
@@ -205,12 +219,13 @@ export default function SettingsForm({ business, onSaved }) {
             <div className="mt-2.5 flex flex-wrap gap-1.5">
               {PRESET_COLORS.map((c) => (
                 <button
-                  key={c}
+                  key={c.hex}
                   type="button"
-                  onClick={() => set({ primary_color: c })}
+                  onClick={() => set({ primary_color: c.hex })}
+                  title={c.name}
                   className="h-7 w-7 rounded-lg ring-1 ring-inset ring-black/10 transition hover:scale-110"
-                  style={{ background: c }}
-                  aria-label={`Use ${c}`}
+                  style={{ background: c.hex }}
+                  aria-label={`Use ${c.name}`}
                 />
               ))}
             </div>

@@ -13,6 +13,12 @@ export default {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
+      transitionTimingFunction: {
+        // Ease-out curves: they start fast and settle, which is what makes an
+        // interface feel responsive rather than sluggish.
+        'out-cubic': 'cubic-bezier(.215, .61, .355, 1)',
+        'out-quart': 'cubic-bezier(.165, .84, .44, 1)',
+      },
       keyframes: {
         'fade-in': { from: { opacity: 0 }, to: { opacity: 1 } },
         'slide-up': {
@@ -25,9 +31,9 @@ export default {
         },
       },
       animation: {
-        'fade-in': 'fade-in 200ms ease-out',
-        'slide-up': 'slide-up 280ms ease-out',
-        'slide-in-right': 'slide-in-right 220ms ease-out',
+        'fade-in': 'fade-in 180ms cubic-bezier(.215, .61, .355, 1)',
+        'slide-up': 'slide-up 240ms cubic-bezier(.165, .84, .44, 1)',
+        'slide-in-right': 'slide-in-right 220ms cubic-bezier(.165, .84, .44, 1)',
       },
     },
   },

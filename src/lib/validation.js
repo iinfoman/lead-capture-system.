@@ -48,7 +48,7 @@ export function validateStep(step, form) {
       errors.customer_name = 'Please enter your name.'
     }
     if (!normalisePhone(form.phone)) {
-      errors.phone = 'Enter a valid SA number, e.g. 082 123 4567.'
+      errors.phone = 'Enter a valid South African number, e.g. 082 123 4567.'
     }
     if (form.whatsapp && !normalisePhone(form.whatsapp)) {
       errors.whatsapp = 'That WhatsApp number does not look right.'

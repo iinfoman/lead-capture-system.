@@ -71,3 +71,11 @@ echo "==> running isolation tests"
 psql_run -f "$ROOT/supabase/tests/10_isolation_test.sql" 2>&1 \
   | grep -E "PASS|FAIL|=====|ALL " \
   | sed -E 's/^psql:[^ ]+ //; s/^NOTICE:  //'
+
+# Runs last: it deliberately removes the anon insert path, so nothing after it
+# would see the pre-hardening state.
+echo "==> verifying the post-deploy hardening script"
+psql_run -v harden_file="$ROOT/supabase/manual/harden_after_edge_function_deploy.sql" \
+  -f "$ROOT/supabase/tests/20_hardening_test.sql" 2>&1 \
+  | grep -E "PASS|FAIL|=====|VERIFIED" \
+  | sed -E 's/^psql:[^ ]+ //; s/^NOTICE:  //'

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { fetchBusinessBySlug } from '../lib/api'
-import { isConfigured } from '../lib/supabaseClient'
+import { fetchBusinessBySlug } from '../lib/publicApi'
+import { isConfigured } from '../lib/config'
 import { readableOn, shade } from '../lib/format'
 
 const BusinessConfigContext = createContext(null)

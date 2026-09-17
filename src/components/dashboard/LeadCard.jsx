@@ -40,7 +40,7 @@ export default function LeadCard({ lead, onOpen, draggable = true, onDragStart, 
       <div className="flex items-start justify-between gap-2">
         <h4 className="text-sm font-bold leading-snug text-slate-900">{lead.customer_name}</h4>
         <time
-          className="shrink-0 text-[11px] font-medium text-slate-400"
+          className="shrink-0 text-[11px] font-medium text-slate-500"
           dateTime={lead.created_at}
         >
           {relativeTime(lead.created_at)}

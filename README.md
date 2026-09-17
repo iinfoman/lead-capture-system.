@@ -20,7 +20,7 @@ inbox, not a CRM**.
 
 | Layer     | Choice                                                            |
 | --------- | ----------------------------------------------------------------- |
-| Frontend  | React 18 + Vite 5 + Tailwind 3, React Router 6                     |
+| Frontend  | React 18 + Vite 5 + Tailwind 3, React Router 6 (route-split)        |
 | Backend   | Supabase Postgres in a dedicated `leadcapture` schema, RLS on everything |
 | Functions | Supabase Edge Functions (Deno) for lead submission and email       |
 | Email     | Resend free tier                                                   |
@@ -29,6 +29,33 @@ inbox, not a CRM**.
 
 No paid APIs. WhatsApp is a `wa.me` deep link, not the Business API. The
 service area is text, not a paid Maps embed.
+
+### Page weight, because it is a business requirement here
+
+Customers reach these pages on prepaid data, often on a mid-range Android.
+So the public landing page does not load anything it does not need:
+
+| | gzipped | budget |
+| --- | --- | --- |
+| Landing route JS | **67 KB** | 200 KB |
+| CSS | **7 KB** | 60 KB |
+| Everything behind a login | 79 KB | loaded lazily, never by a customer |
+
+Two decisions get it there, and both are worth keeping:
+
+- **Everything behind a login is route-split**, including the Supabase SDK
+  itself. It is reached only through `AuthShell`, so a customer reading a
+  plumber's page never downloads the kanban board or the admin table.
+- **The public page talks to PostgREST directly** (`src/lib/publicApi.js`)
+  rather than through `@supabase/supabase-js`. The SDK bundles a realtime
+  client this app never uses and an auth client a customer never needs;
+  skipping it roughly halves the JavaScript on the only route customers load.
+  Authenticated routes still use the SDK — see `src/lib/api.js`.
+
+The font is self-hosted (`public/fonts/`): one variable woff2, latin subset,
+48 KB, covering every weight. It replaced five static weights fetched from
+Google's CDN, which also removes a third-party connection and the POPIA
+question that comes with it.
 
 ---
 
@@ -68,6 +95,10 @@ supabase/migrations/
   20260917090200_leadcapture_storage.sql   bucket + storage policies
   20260917090300_leadcapture_seed_demo.sql two demo tenants
 ```
+
+There is also `supabase/manual/harden_after_edge_function_deploy.sql`, which is
+deliberately **not** in `migrations/`. Run it once the Edge Function is live;
+see step 5 and `docs/SECURITY.md`.
 
 Every migration is idempotent — re-running one is safe.
 
@@ -137,6 +168,17 @@ form falls back to a direct insert permitted by the public RLS policy. The
 lead is saved either way — but nobody is emailed, and the confirmation screen
 tells the customer the truth about that.
 
+**Once the function is live, close that fallback:**
+
+```bash
+psql "$DATABASE_URL" -f supabase/manual/harden_after_edge_function_deploy.sql
+```
+
+That removes the last route by which someone holding the public anon key could
+write leads directly, skipping validation, the honeypot and the rate limit. The
+script refuses to report success unless the policy and the grant are both gone,
+and the test suite proves it leaves public reads and owner access intact.
+
 ### 6. Netlify
 
 Connect the repo; `netlify.toml` already sets the build command, the publish
@@ -146,10 +188,14 @@ Environment variables**.
 
 ---
 
-## Verifying tenant isolation
+## Verifying it
+
+Two suites, both runnable offline.
+
+### Database — tenant isolation
 
 The thing most worth being sure about is that one business can never see
-another's leads. There is a real test for it:
+another's leads.
 
 ```bash
 ./supabase/tests/run.sh
@@ -157,14 +203,30 @@ another's leads. There is a real test for it:
 
 It spins up a throwaway local Postgres, stubs the `auth.*` and `storage.*`
 objects Supabase would provide, applies the real migrations, re-applies them to
-prove they are idempotent, and then runs 30 assertions as four different roles
+prove they are idempotent, and then runs 35 assertions as four different roles
 — owner A, owner B, an anonymous visitor and a platform admin. It never touches
 the shared Ovibe project.
 
 Among them: owner A cannot read, update or delete tenant B's leads; cannot
 reassign one of their own leads into tenant B; anonymous visitors have no read
 access to `leads` whatsoever; and a lead submission cannot arrive pre-loaded
-with a quote or a non-`new` status.
+with a quote or a non-`new` status. The final phase runs the hardening script
+above and proves it closes the anon write path without breaking the public
+landing page.
+
+### Browser — the customer journey
+
+```bash
+npm run test:e2e
+```
+
+Builds the app against a mock PostgREST, then drives a real Chromium at phone
+width through the whole journey: landing page hydrates from the config row,
+branding lands as a CSS variable, the form prompt adapts to the chosen service,
+a bad phone number is refused, a good submission reaches the confirmation
+screen. The mock also asserts the requests themselves — that PostgREST was
+asked for the `leadcapture` schema, and that the phone number was already
+normalised to E.164 on the wire.
 
 ---
 
@@ -172,7 +234,8 @@ with a quote or a non-`new` status.
 
 ```
 src/
-  lib/              supabase client, data access, validation, formatting
+  lib/              config, public (SDK-free) data path, SDK data path,
+                    validation, formatting
   context/          AuthProvider, BusinessConfigProvider
   components/
     landing/        hero, services, reviews, gallery, lead form, confirmation
@@ -182,11 +245,13 @@ src/
   pages/            one file per route
 supabase/
   migrations/       schema, RLS, storage, seed
+  manual/           post-deploy hardening (run once, by hand)
   functions/        leadcapture-submit-lead + shared validation/email/cors
-  tests/            tenant isolation suite
+  tests/            tenant isolation + hardening suite
+e2e/                mock backend + browser test of the customer journey
 ```
 
-### Two things worth knowing before you change anything
+### Three things worth knowing before you change anything
 
 **Validation exists twice, on purpose.** `src/lib/validation.js` gives the
 customer instant feedback; `supabase/functions/_shared/validation.ts` is the
@@ -197,6 +262,12 @@ change the other.
 when a lead lands goes through `dispatchNotifications` in the Edge Function.
 Phase 2 work (WhatsApp Business API, Sheets sync, Make.com) adds a promise to
 that array — no schema change and no new insert path.
+
+**There are two data paths, and that is deliberate.** `lib/publicApi.js` is
+plain `fetch` for the public page; `lib/api.js` uses the SDK for everything
+behind a login. The split is what keeps the SDK out of the customer's download.
+If you add a public read, add it to `publicApi.js` — importing `lib/api.js`
+into a landing component silently pulls the whole SDK back into that bundle.
 
 ---
 

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useBusinessConfig } from '../../context/BusinessConfigProvider'
-import { submitLead, uploadLeadPhoto } from '../../lib/api'
+import { submitLead, uploadLeadPhoto } from '../../lib/publicApi'
 import { CONTACT_OPTIONS, URGENCY_OPTIONS } from '../../lib/constants'
 import { validatePhotoFile, validateStep } from '../../lib/validation'
 import ServiceSelector from './ServiceSelector'
@@ -188,7 +188,7 @@ export default function LeadForm({ onSubmitted }) {
                 <li key={s.key} className="flex flex-1 items-center gap-2">
                   <span
                     className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold transition ${
-                      active || done ? 'text-white' : 'bg-white text-slate-400 ring-1 ring-slate-300'
+                      active || done ? 'text-white' : 'bg-white text-slate-500 ring-1 ring-slate-300'
                     }`}
                     style={active || done ? { background: 'var(--brand-primary)' } : undefined}
                     aria-current={active ? 'step' : undefined}
@@ -301,7 +301,7 @@ export default function LeadForm({ onSubmitted }) {
 
                 <div>
                   <label htmlFor="location" className="label">
-                    Suburb or area <span className="font-normal text-slate-400">(optional)</span>
+                    Suburb or area <span className="font-normal text-slate-500">(optional)</span>
                   </label>
                   <input
                     id="location"
@@ -319,7 +319,7 @@ export default function LeadForm({ onSubmitted }) {
 
                 <div>
                   <span className="label">
-                    Photo <span className="font-normal text-slate-400">(optional, helps a lot)</span>
+                    Photo <span className="font-normal text-slate-500">(optional, helps a lot)</span>
                   </span>
 
                   {photo ? (
@@ -456,7 +456,7 @@ export default function LeadForm({ onSubmitted }) {
                   <div>
                     <label htmlFor="whatsapp" className="label">
                       WhatsApp number{' '}
-                      <span className="font-normal text-slate-400">
+                      <span className="font-normal text-slate-500">
                         {form.preferred_contact === 'whatsapp' ? '(or we use your phone number)' : '(optional)'}
                       </span>
                     </label>
@@ -480,7 +480,7 @@ export default function LeadForm({ onSubmitted }) {
                   <div>
                     <label htmlFor="email" className="label">
                       Email{' '}
-                      <span className="font-normal text-slate-400">
+                      <span className="font-normal text-slate-500">
                         {form.preferred_contact === 'email' ? '' : '(optional — for your confirmation)'}
                       </span>
                     </label>

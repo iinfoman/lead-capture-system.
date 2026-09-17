@@ -27,6 +27,9 @@ export default function WorkGallery() {
                   src={photo.image_url}
                   alt={photo.caption || 'Example of our work'}
                   loading="lazy"
+                  decoding="async"
+                  width="800"
+                  height="600"
                   className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.04]"
                 />
               </div>
@@ -57,6 +60,8 @@ export default function WorkGallery() {
             <img
               src={lightbox.image_url}
               alt={lightbox.caption || 'Example of our work'}
+              width="1200"
+              height="900"
               className="max-h-[75vh] w-full rounded-2xl object-contain"
             />
             {lightbox.caption ? (

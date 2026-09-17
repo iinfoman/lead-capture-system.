@@ -68,12 +68,12 @@ export default function LeadStatusBoard({ leads, onOpenLead, onStatusChange }) {
                     {items.length}
                   </span>
                 </div>
-                <p className="mt-0.5 pl-4 text-[11px] text-slate-400">{status.hint}</p>
+                <p className="mt-0.5 pl-4 text-[11px] text-slate-500">{status.hint}</p>
               </header>
 
               <div className="scroll-slim flex max-h-[calc(100vh-19rem)] flex-1 flex-col gap-2.5 overflow-y-auto px-3 pb-3.5">
                 {items.length === 0 ? (
-                  <p className="rounded-xl border border-dashed border-slate-300 px-3 py-6 text-center text-xs text-slate-400">
+                  <p className="rounded-xl border border-dashed border-slate-300 px-3 py-6 text-center text-xs text-slate-500">
                     {isTarget ? 'Drop here' : 'Nothing here'}
                   </p>
                 ) : (

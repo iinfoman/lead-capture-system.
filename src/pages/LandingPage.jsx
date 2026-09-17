@@ -97,7 +97,7 @@ function LandingContent() {
             {business.service_area ? <span>{business.service_area}</span> : null}
           </div>
         </div>
-        <p className="pb-6 text-xs text-slate-400">
+        <p className="pb-6 text-xs text-slate-500">
           © {new Date().getFullYear()} {business.name}. Quotes are free and carry no obligation.
         </p>
       </footer>

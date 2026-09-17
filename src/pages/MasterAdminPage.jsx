@@ -106,13 +106,13 @@ export default function MasterAdminPage() {
       <header className="border-b border-slate-200 bg-slate-900 text-white">
         <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4 sm:px-8">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-300">
               Platform
             </p>
             <h1 className="text-xl font-bold tracking-tight">Master admin</h1>
           </div>
           <div className="flex items-center gap-2.5">
-            <span className="hidden text-xs text-slate-400 sm:block">{user?.email}</span>
+            <span className="hidden text-xs text-slate-300 sm:block">{user?.email}</span>
             <Link to="/dashboard" className="btn bg-white/10 py-2 text-sm text-white hover:bg-white/20">
               My dashboard
             </Link>
@@ -139,7 +139,7 @@ export default function MasterAdminPage() {
             { label: 'Open pipeline', value: currency(stats.pipeline) ?? 'R0' },
           ].map((s) => (
             <div key={s.label} className="card px-4 py-3.5">
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {s.label}
               </dt>
               <dd className="mt-1 text-2xl font-bold text-slate-900">{s.value}</dd>

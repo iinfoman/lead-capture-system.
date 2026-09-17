@@ -65,14 +65,14 @@ export default function ConfirmationScreen({ result, onStartOver }) {
           <p className="text-sm font-semibold text-slate-900">What happens next</p>
           <ol className="mt-3 space-y-2.5 text-sm text-slate-600">
             <li className="flex gap-2.5">
-              <span className="font-bold text-slate-400">1.</span>
+              <span className="font-bold text-slate-500">1.</span>
               <span>
                 We review what you sent
                 {result.form?.service?.name ? ` about ${result.form.service.name.toLowerCase()}` : ''}.
               </span>
             </li>
             <li className="flex gap-2.5">
-              <span className="font-bold text-slate-400">2.</span>
+              <span className="font-bold text-slate-500">2.</span>
               <span>
                 We get back to you by{' '}
                 <strong className="text-slate-800">
@@ -86,7 +86,7 @@ export default function ConfirmationScreen({ result, onStartOver }) {
               </span>
             </li>
             <li className="flex gap-2.5">
-              <span className="font-bold text-slate-400">3.</span>
+              <span className="font-bold text-slate-500">3.</span>
               <span>You get a clear price before any work starts.</span>
             </li>
           </ol>

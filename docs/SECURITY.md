@@ -45,19 +45,27 @@ no privilege in the first place, so the read is refused a layer earlier.
 active business. Those are the owner's fields; a form submission has no
 business setting them.
 
-**The public insert policy is a fallback, and you can drop it.** The browser
+**The public insert policy is a fallback, and you should drop it.** The browser
 normally posts to the Edge Function, which validates, rate-limits and inserts
 with the service-role key. The anon insert policy only exists so the form still
-works before the function is deployed. Once every client goes through the Edge
-Function:
+works before that function is deployed.
 
-```sql
-drop policy "public insert leads" on leadcapture.leads;
-revoke insert on leadcapture.leads from anon;
+Once the function is live and you have seen a real submission come through it:
+
+```bash
+psql "$DATABASE_URL" -f supabase/manual/harden_after_edge_function_deploy.sql
 ```
 
-Do this in production. It removes the last path by which someone holding the
-anon key could write rows directly, bypassing the rate limit and the honeypot.
+It is a script rather than a line in the runbook because a manual step gets
+forgotten, and because it should refuse to lie: it re-checks that both the
+policy and the grant are gone and raises if either survives. The test suite
+runs it against a throwaway database and proves it closes the anon write path
+while leaving the public landing page and owner access working.
+
+Until you run it, someone holding the anon key — which ships in the browser
+bundle and is meant to be public — can write rows into `leads` directly,
+skipping validation, the honeypot and the rate limit. They still cannot read
+anything.
 
 **Master admin is one manually inserted row.** `platform_admins` has a read
 policy scoped to your own row and *no* insert, update or delete policy at all,
@@ -118,11 +126,17 @@ those are not React.
 because RLS is on every table, which is why nothing here may ship with RLS
 disabled "temporarily".
 
+The public landing page reaches PostgREST with plain `fetch` rather than the
+Supabase SDK (see `src/lib/publicApi.js`). That is a bundle-size decision, not
+a security one: it sends the same anon key with the same `Accept-Profile`
+header the SDK would, and every request is still subject to the same RLS
+policies. Nothing about the trust model changes.
+
 ## Before going live
 
-- [ ] Run `./supabase/tests/run.sh` — all 30 assertions pass
+- [ ] Run `npm test` — 35 database assertions and 16 browser checks pass
 - [ ] Confirm `leadcapture` is in **Exposed schemas**
-- [ ] Drop the public insert policy and revoke `insert` from `anon` (above)
+- [ ] Run `supabase/manual/harden_after_edge_function_deploy.sql` (above)
 - [ ] Set `LEAD_ALLOWED_ORIGINS` on the Edge Function to your real domains
       instead of the `*` fallback
 - [ ] Set a real `LEAD_IP_SALT` — the default is a known constant

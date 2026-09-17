@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { isConfigured, supabase } from '../lib/supabaseClient'
-import { useAuth } from '../context/AuthProvider'
+import { isConfigured } from '../lib/config'
+import { fetchActiveBusinesses } from '../lib/publicApi'
 import Spinner from '../components/common/Spinner'
 
 /**
@@ -10,7 +10,6 @@ import Spinner from '../components/common/Spinner'
  * production a business normally has its own domain pointed at its own slug.
  */
 export default function IndexPage() {
-  const { session } = useAuth()
   const [businesses, setBusinesses] = useState(null)
 
   useEffect(() => {
@@ -18,18 +17,15 @@ export default function IndexPage() {
       setBusinesses([])
       return
     }
-    supabase
-      .from('businesses')
-      .select('slug, name, tagline, primary_color')
-      .eq('active', true)
-      .order('name')
-      .then(({ data }) => setBusinesses(data ?? []))
+    fetchActiveBusinesses()
+      .then(setBusinesses)
+      .catch(() => setBusinesses([]))
   }, [])
 
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="section py-16 sm:py-24">
-        <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+        <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
           Lead capture
         </p>
         <h1 className="mt-3 max-w-2xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
@@ -41,8 +37,8 @@ export default function IndexPage() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link to={session ? '/dashboard' : '/login'} className="btn btn-primary px-6 py-3">
-            {session ? 'Open my dashboard' : 'Business owner login'}
+          <Link to="/login" className="btn btn-primary px-6 py-3">
+            Business owner login
           </Link>
         </div>
 
@@ -88,7 +84,7 @@ export default function IndexPage() {
                       {b.tagline}
                     </span>
                   ) : null}
-                  <span className="mt-auto pt-4 text-sm font-semibold text-slate-400 transition group-hover:text-slate-700">
+                  <span className="mt-auto pt-4 text-sm font-semibold text-slate-500 transition group-hover:text-slate-700">
                     /{b.slug} →
                   </span>
                 </Link>

@@ -176,6 +176,8 @@ export default function ChildRowEditor({
                       <img
                         src={draft.image_url || row.image_url}
                         alt=""
+                        width="40"
+                        height="40"
                         className="h-10 w-10 shrink-0 rounded-lg object-cover"
                       />
                     ) : null}
@@ -184,10 +186,10 @@ export default function ChildRowEditor({
                         {labelOf(draft) || 'Untitled'}
                       </span>
                       {'active' in draft && !draft.active ? (
-                        <span className="text-xs font-medium text-slate-400">Hidden</span>
+                        <span className="text-xs font-medium text-slate-500">Hidden</span>
                       ) : null}
                     </span>
-                    <span className="ml-auto shrink-0 text-slate-400" aria-hidden="true">
+                    <span className="ml-auto shrink-0 text-slate-500" aria-hidden="true">
                       {open ? '▾' : '▸'}
                     </span>
                   </button>
@@ -231,7 +233,7 @@ export default function ChildRowEditor({
                               }
                               className="text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-100 file:px-3 file:py-2 file:text-sm file:font-semibold"
                             />
-                            {busy ? <Spinner className="h-4 w-4 text-slate-400" /> : null}
+                            {busy ? <Spinner className="h-4 w-4 text-slate-500" /> : null}
                           </div>
                         ) : field.type === 'select' ? (
                           <select

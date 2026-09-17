@@ -66,7 +66,7 @@ export default function ServiceAreaText() {
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[15px] font-semibold text-slate-900">
                     {faq.question}
                     <span
-                      className="shrink-0 text-slate-400 transition group-open:rotate-45"
+                      className="shrink-0 text-slate-500 transition group-open:rotate-45"
                       aria-hidden="true"
                     >
                       ＋
