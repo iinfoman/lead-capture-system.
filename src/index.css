@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Defaults so the dashboard and auth pages render before (or without) a
+     business config. BusinessConfigProvider overwrites these per tenant. */
+  :root {
+    --brand-primary: #0f766e;
+    --brand-primary-dark: #0c5f59;
+    --brand-primary-light: #dbeeec;
+    --brand-primary-soft: #eef7f6;
+    --brand-on-primary: #ffffff;
+    --brand-secondary: #111827;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+
+  /* Visible focus for keyboard users on every interactive element. */
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+    @apply outline-none ring-2 ring-offset-2;
+    --tw-ring-color: var(--brand-primary);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5
+           text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-primary {
+    background-color: var(--brand-primary);
+    color: var(--brand-on-primary);
+    @apply shadow-sm;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--brand-primary-dark);
+  }
+
+  .btn-secondary {
+    @apply border border-slate-300 bg-white text-slate-700 shadow-sm hover:bg-slate-50;
+  }
+
+  .btn-ghost {
+    @apply text-slate-600 hover:bg-slate-100 hover:text-slate-900;
+  }
+
+  .btn-danger {
+    @apply border border-red-200 bg-white text-red-700 hover:bg-red-50;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-[15px]
+           text-slate-900 shadow-sm transition placeholder:text-slate-400
+           focus:border-transparent;
+  }
+
+  .field-error {
+    @apply border-red-400 bg-red-50/40;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-slate-700;
+  }
+
+  .hint {
+    @apply mt-1.5 text-xs text-slate-500;
+  }
+
+  .error-text {
+    @apply mt-1.5 flex items-start gap-1 text-xs font-medium text-red-600;
+  }
+
+  .card {
+    @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+  }
+
+  .section {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+  }
+}
+
+/* Thin scrollbars for the kanban columns, without hiding them entirely. */
+.scroll-slim::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-slate-300;
+}
+.scroll-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
