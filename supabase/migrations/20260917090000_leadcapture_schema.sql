@@ -143,9 +143,16 @@ create index if not exists lead_submission_log_ip_time_idx
 -- ---------------------------------------------------------------------------
 -- updated_at maintenance
 -- ---------------------------------------------------------------------------
+-- search_path is pinned here for the same reason as on the RLS helpers: a
+-- mutable one lets whoever can set it influence how unqualified names inside
+-- the function resolve. now() is in pg_catalog, always searched, so an empty
+-- search_path is safe. Supabase's database linter flags this as
+-- function_search_path_mutable if it is left unset.
 create or replace function leadcapture.set_updated_at()
 returns trigger
 language plpgsql
+security invoker
+set search_path = ''
 as $$
 begin
   new.updated_at = now();
