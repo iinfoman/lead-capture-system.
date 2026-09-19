@@ -1,0 +1,80 @@
+# Builds the app and publishes it to GitHub Pages.
+#
+# Why this exists: it produces a working, public preview URL with no manual
+# setup and no repository secrets. `configure-pages` turns Pages on by itself
+# using the workflow's own token, so nobody has to visit a settings screen.
+#
+# Netlify remains the production host. This is the staging URL — useful for
+# checking a change against the real database before it reaches a client.
+#
+# The two Supabase values below are deliberately in plain sight. The anon key
+# is designed to be public: it ships inside the JavaScript bundle of every
+# Supabase site, and every table it can reach is protected by row level
+# security (see docs/SECURITY.md). It is not a credential to guard — the
+# service-role key, which is, lives only in the Edge Function environment and
+# appears nowhere in this repository.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [claude/new-session-5y0vge]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it mid-publish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          # Turns Pages on if it is not already, so no manual step is needed.
+          enablement: true
+
+      - name: Build
+        env:
+          VITE_BASE: ${{ steps.pages.outputs.base_path }}/
+          VITE_SUPABASE_URL: https://bicpbpasvtvqisatiiqd.supabase.co
+          VITE_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpY3BicGFzdnR2cWlzYXRpaXFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NjU2NTksImV4cCI6MjA5OTU0MTY1OX0.jDqzgYkrnIEQWBiGzvKfASl39liw59d7aJfza93HqCE
+        run: npm run build
+
+      - name: Add SPA fallback
+        # Pages has no rewrite rules, so a deep link like /table-mountain-plumbing
+        # would 404. Serving the same document as 404.html lets the router pick
+        # the route up on the client — the standard SPA-on-Pages trick.
+        run: cp dist/index.html dist/404.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
