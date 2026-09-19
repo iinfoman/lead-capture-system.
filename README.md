@@ -83,6 +83,31 @@ project.
 
 ## Getting it running
 
+### Fastest path: one command
+
+```bash
+cp .env.deploy.example .env.deploy   # fill in, it is gitignored
+./scripts/bootstrap.sh               # does all five steps below
+./scripts/verify.sh                  # proves it works from the outside
+```
+
+`bootstrap.sh` applies the migrations, adds `leadcapture` to the project's
+exposed schemas over the Management API, deploys the Edge Function and its
+secrets, sets the Netlify env vars and deploys, and optionally creates the
+first owner login *and* links it to a business — the step that is easiest to
+forget, because without it the dashboard just looks broken.
+
+It is idempotent, and it reads the project's existing exposed-schema list and
+appends to it rather than overwriting, since this project is shared with
+another app.
+
+`verify.sh` then checks the deployment from outside, with the public key: that
+the schema is actually exposed, that the landing page can read its config, and
+that the public key **cannot** read leads or business_users.
+
+The manual walkthrough below is the same work, by hand, if you would rather see
+each step.
+
 ### 1. Database
 
 Run the migrations in order against the Ovibe project (SQL editor, or
