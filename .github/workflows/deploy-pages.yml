@@ -1,11 +1,24 @@
 # Builds the app and publishes it to GitHub Pages.
 #
-# Why this exists: it produces a working, public preview URL with no manual
-# setup and no repository secrets. `configure-pages` turns Pages on by itself
-# using the workflow's own token, so nobody has to visit a settings screen.
-#
-# Netlify remains the production host. This is the staging URL — useful for
+# Netlify is the production host. This is an optional staging URL — useful for
 # checking a change against the real database before it reaches a client.
+#
+# ONE-TIME SETUP, then this runs on every push:
+#   Settings -> Pages -> Build and deployment -> Source: "GitHub Actions"
+#
+# It cannot enable Pages for you. `actions/configure-pages` with
+# `enablement: true` was tried and the API refused it:
+#   "Create Pages site failed. Error: Resource not accessible by integration"
+# A workflow token only carries permissions the GitHub App installation already
+# holds, and creating a Pages site is not one of them. Declaring
+# `permissions: pages: write` cannot grant what the installation lacks.
+#
+# Until Pages is switched on, this is manual-dispatch only, so it does not fail
+# on every push. Once it is on, change the trigger to:
+#   on:
+#     push:
+#       branches: [claude/new-session-5y0vge]
+#     workflow_dispatch:
 #
 # The two Supabase values below are deliberately in plain sight. The anon key
 # is designed to be public: it ships inside the JavaScript bundle of every
@@ -17,8 +30,6 @@
 name: Deploy to GitHub Pages
 
 on:
-  push:
-    branches: [claude/new-session-5y0vge]
   workflow_dispatch:
 
 permissions:
@@ -48,9 +59,9 @@ jobs:
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
-        with:
-          # Turns Pages on if it is not already, so no manual step is needed.
-          enablement: true
+        # No `enablement: true` — the token cannot create the Pages site, and
+        # asking produces a hard error instead of a useful message. This reads
+        # the existing Pages config, so switch Pages on first (see above).
 
       - name: Build
         env:
