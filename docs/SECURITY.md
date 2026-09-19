@@ -132,6 +132,28 @@ a security one: it sends the same anon key with the same `Accept-Profile`
 header the SDK would, and every request is still subject to the same RLS
 policies. Nothing about the trust model changes.
 
+## How the schema is exposed
+
+PostgREST is told to serve `leadcapture` via an in-database setting rather than
+the dashboard field:
+
+```sql
+alter role authenticator set pgrst.db_schemas = 'public, graphql_public, leadcapture';
+notify pgrst, 'reload config';
+```
+
+Supabase runs PostgREST with `db-config` enabled, so role settings win. Two
+consequences worth knowing:
+
+- This **overrides** Settings -> API -> Exposed schemas. Editing that field in
+  the dashboard will appear to do nothing while this setting exists.
+- To hand control back to the dashboard:
+  `alter role authenticator reset pgrst.db_schemas;`
+
+The list deliberately keeps `public` and `graphql_public`, Supabase's two
+defaults, because this project is shared — dropping them would take the other
+app's API offline.
+
 ## Before going live
 
 - [ ] Run `npm test` — 35 database assertions and 16 browser checks pass

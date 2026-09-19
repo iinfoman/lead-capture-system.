@@ -83,12 +83,12 @@ say "2/5  Exposing the leadcapture schema to PostgREST"
 # This project is shared with other apps, so read the current config and add
 # to it rather than overwriting — clobbering db_schema here would take the
 # other app's API offline.
-current="$(api GET "/projects/$SUPABASE_PROJECT_REF/postgrest")"
-existing="$(echo "$current" | jq -r '.db_schema // "public,graphql_public"')"
+current="$(api GET "/projects/$SUPABASE_PROJECT_REF/postgrest" 2>/dev/null)"
+existing="$(echo "$current" | jq -r '.db_schema // empty' 2>/dev/null)"
 
-if echo "$existing" | tr ',' '\n' | tr -d ' ' | grep -qx "leadcapture"; then
+if [ -n "$existing" ] && echo "$existing" | tr ',' '\n' | tr -d ' ' | grep -qx "leadcapture"; then
   ok "already exposed: $existing"
-else
+elif [ -n "$existing" ]; then
   merged="$existing,leadcapture"
   updated="$(api PATCH "/projects/$SUPABASE_PROJECT_REF/postgrest" \
              "$(jq -nc --arg s "$merged" '{db_schema:$s}')")"
@@ -97,6 +97,24 @@ else
   else
     die "Could not update exposed schemas: $updated"
   fi
+elif [ -n "${SUPABASE_DB_URL:-}" ] && have psql; then
+  # Fallback when the Management API is unreachable (restricted network, no
+  # PAT). PostgREST on Supabase runs with db-config enabled, which means it
+  # reads its settings from the `authenticator` role rather than only from the
+  # platform. Setting it here has the same effect as the dashboard field.
+  #
+  # Caveat worth knowing: once set, this role setting OVERRIDES the dashboard's
+  # "Exposed schemas" field. To hand control back to the dashboard, run:
+  #   alter role authenticator reset pgrst.db_schemas;
+  warn "Management API unreachable — setting exposed schemas in-database instead"
+  psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -q <<'SQL'
+alter role authenticator set pgrst.db_schemas = 'public, graphql_public, leadcapture';
+notify pgrst, 'reload config';
+notify pgrst, 'reload schema';
+SQL
+  ok "exposed schemas set on the authenticator role"
+else
+  die "Could not reach the Management API, and no SUPABASE_DB_URL for the fallback"
 fi
 
 # ---------------------------------------------------------------------------
