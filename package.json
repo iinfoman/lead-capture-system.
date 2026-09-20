@@ -12,7 +12,8 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
     "test:e2e": "./e2e/run.sh",
     "test:db": "./supabase/tests/run.sh",
-    "test": "npm run test:db && npm run test:e2e"
+    "test": "npm run test:db && npm run test:e2e",
+    "preview:shots": "./e2e/shots.sh"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

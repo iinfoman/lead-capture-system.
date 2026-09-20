@@ -17,3 +17,6 @@ supabase/.branches
 
 # Deployment secrets
 .env.deploy
+
+# Local preview screenshots
+preview/
