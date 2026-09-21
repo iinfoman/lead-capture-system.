@@ -5,6 +5,26 @@
 [build.environment]
   NODE_VERSION = "22"
 
+  # Declared here rather than as dashboard environment variables, because
+  # dashboard variables did not survive linking the repository — the site built
+  # green with them missing, and every page showed "Supabase is not configured".
+  # Keeping them in the repo makes the build self-sufficient and removes that
+  # whole class of failure.
+  #
+  # Safe to commit: the anon key is designed to be public. It ships inside the
+  # JavaScript bundle of every Supabase site, and row level security guards
+  # every table it can reach (docs/SECURITY.md). The service-role key, which is
+  # a real credential, lives only in the Edge Function environment and appears
+  # nowhere in this repository.
+  VITE_SUPABASE_URL = "https://bicpbpasvtvqisatiiqd.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJpY3BicGFzdnR2cWlzYXRpaXFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5NjU2NTksImV4cCI6MjA5OTU0MTY1OX0.jDqzgYkrnIEQWBiGzvKfASl39liw59d7aJfza93HqCE"
+
+  # Netlify fails a build when a declared variable's value turns up in the
+  # published output. That is exactly what is supposed to happen here — Vite
+  # inlines both values into the bundle — so these two keys are exempted by
+  # name rather than switching the scanner off wholesale.
+  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY"
+
 # SPA fallback: every route (including /:businessSlug) is handled by React Router.
 [[redirects]]
   from = "/*"
