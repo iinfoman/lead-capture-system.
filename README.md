@@ -180,13 +180,22 @@ supabase functions deploy leadcapture-submit-lead --no-verify-jwt
 
 supabase secrets set \
   RESEND_API_KEY=re_xxx \
-  RESEND_FROM="Leads <leads@yourdomain.co.za>" \
   LEAD_IP_SALT="$(openssl rand -hex 16)" \
   APP_BASE_URL=https://your-site.netlify.app
 ```
 
 `--no-verify-jwt` is correct here: the lead form is public and calls the
 function with the anon key.
+
+No `RESEND_FROM` above on purpose. Every notification already carries the
+real business's name in the display — `"Princess Housekeeping"
+<onboarding@resend.dev>` — built from `businesses.name`, at no cost, before
+any tenant owns a domain. Once one does, set `RESEND_SENDER_ADDRESS` to a
+verified address on it; the per-business name still applies on top for every
+tenant at once. `RESEND_FROM` is a full override that replaces that name
+entirely for every business using this function — only reach for it running a
+single tenant through here, never as the default multi-tenant setup. See the
+header of `supabase/functions/_shared/email.ts` for the full reasoning.
 
 **The app works before you deploy this.** If the function is unreachable the
 form falls back to a direct insert permitted by the public RLS policy. The
