@@ -262,6 +262,37 @@ end
 $$;
 rollback;
 
+-- ---------------------------------------------------------------------------
+-- service_role — the identity the Edge Function actually runs as.
+--
+-- Every test above exercises anon or authenticated, so none of them would
+-- ever have caught this: BYPASSRLS only skips row-level security *policy*
+-- evaluation. The base GRANT/REVOKE privilege system on a custom schema is
+-- separate and grants nothing automatically, so a missing grant here 403s
+-- every real lead submission while every RLS test above keeps passing clean
+-- — exactly how this reached a live client's site undetected.
+-- ---------------------------------------------------------------------------
+begin;
+set local role service_role;
+do $$
+declare n int;
+begin
+  perform public.t_check('service_role can read businesses (Edge Function lookup)',
+    (select count(*) from leadcapture.businesses)::text, '2');
+
+  insert into leadcapture.leads (business_id, customer_name, phone, description, status)
+  values ('11111111-1111-4111-8111-111111111111', 'Service Role Test', '27820000199', 'x', 'new');
+  get diagnostics n = row_count;
+  perform public.t_check('service_role can insert a lead (Edge Function write)', n::text, '1');
+
+  update leadcapture.leads set status = 'contacted'
+    where customer_name = 'Service Role Test';
+  get diagnostics n = row_count;
+  perform public.t_check('service_role can update a lead', n::text, '1');
+end
+$$;
+rollback;
+
 drop function public.t_check(text, text, text);
 
 \echo ''

@@ -228,7 +228,7 @@ another's leads.
 
 It spins up a throwaway local Postgres, stubs the `auth.*` and `storage.*`
 objects Supabase would provide, applies the real migrations, re-applies them to
-prove they are idempotent, and then runs 35 assertions as four different roles
+prove they are idempotent, and then runs 38 assertions as four roles, plus service_role
 — owner A, owner B, an anonymous visitor and a platform admin. It never touches
 the shared Ovibe project.
 

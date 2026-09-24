@@ -12,7 +12,7 @@ another's leads.
 This spins up a throwaway local Postgres, stubs the `auth.*` and `storage.*`
 objects Supabase provides, applies the real migrations from
 `supabase/migrations/`, re-applies them to prove they are idempotent, and runs
-35 assertions as four roles. It never connects to the shared Ovibe project.
+38 assertions as four roles, plus service_role. It never connects to the shared Ovibe project.
 
 What it asserts:
 
@@ -42,6 +42,21 @@ What it asserts:
 - sees every lead and every business across all tenants
 - can update any tenant's lead
 - gets this through stacked RLS policies, not a service-role key
+
+**`service_role`** — the identity the Edge Function actually runs as, and the
+one gap every other check above cannot see
+- can read `businesses` (the function's lookup-by-slug) and insert/update a
+  `leads` row (the function's write)
+- exists because `BYPASSRLS` only skips row-level security *policy*
+  evaluation — it is not the same permission as the base `GRANT`/`REVOKE`
+  system, which a custom schema enforces from zero regardless of who bypasses
+  RLS. The original schema migration granted `anon` and `authenticated` but
+  never `service_role`, so every real submission 403'd with
+  `permission denied for schema leadcapture` until
+  `20260924151500_leadcapture_grant_service_role.sql` fixed it. Every
+  anon/authenticated check above kept passing throughout, which is exactly
+  why this needed its own explicit test rather than being caught by the rest
+  of the suite.
 
 **The hardening script** (runs last, since it is destructive)
 - before it, an anonymous visitor can submit a lead
